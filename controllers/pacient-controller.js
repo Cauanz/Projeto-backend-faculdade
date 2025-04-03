@@ -93,5 +93,43 @@ const getPatient = async (req, res) => {
 
 }
 
+const updatePatient = async (req, res) => {
 
-module.exports = { patientRegister, patientLogin, getPatients, getPatient };
+  const { id } = req.params;
+  const { name, email, birthDate, address, CPF, phoneNumber, password, medical_history } = req.body;
+
+  try {
+    
+    const existingUser = await Patient.findOne({ where: { id }});
+
+    if(!existingUser) {
+      res.status(401).json({ message: "Paciente não encontrado"});
+      return;
+    }
+
+    const fieldsToUpdate = {};
+
+    if (name) fieldsToUpdate.name = removeAccents(name);
+    if (email) fieldsToUpdate.email = email;
+    if (birthDate) fieldsToUpdate.birth_date = birthDate;
+    if (address) fieldsToUpdate.address = removeAccents(address);
+    if (CPF) fieldsToUpdate.cpf = formatCPF(CPF);
+    if (phoneNumber) fieldsToUpdate.telefone = formatPhone(phoneNumber);
+    if (medical_history) fieldsToUpdate.medical_history = medical_history;
+
+    //TODO - TALVEZ TENHA QUE FORMATAR LINHA POR LINHA DO MEDICAL_HISTORY PARA NORMALIZAR, PORQUE STRINGFY ELE TODO NÃO DEU CERTO NÃO
+
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    const updatedPatient = await Patient.update(fieldsToUpdate, { where: { id } });
+
+    res.status(200).json({ message: "Paciente atualizado com sucesso" });
+
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao atualizar o paciente", error });
+  }
+
+}
+
+module.exports = { patientRegister, patientLogin, getPatients, getPatient, updatePatient };

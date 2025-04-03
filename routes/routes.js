@@ -1,4 +1,4 @@
-const { patientRegister, patientLogin, getPatients, getPatient } = require("../controllers/pacient-controller");
+const { patientRegister, patientLogin, getPatients, getPatient, updatePatient } = require("../controllers/pacient-controller");
 const router = require("express").Router();
 
 
@@ -8,10 +8,11 @@ router.post("/patients/login/", patientLogin);
 // router.post("/patients/logout/", patientLogout);
 router.get("/patients/", getPatients);
 router.get("/patients/:id", getPatient);
-// router.put("/patients/:id", updatePatient);
+router.put("/patients/:id", updatePatient);
 // router.delete("/patients/:id", deletePatient);
 
 //TODO - TECNICAMENTE É SÓ TERMINAR AS ROTAS DE PACIENTE E DUPLICAR ELAS ALTERANDO OQUE FOR NECESSÁRIO NAS OUTRAS (DISSERAM QUE EU SÓ PRECISO FAZER O CRUD, NÉ?)
+//TODO - CRIAR O MIDDLEWARE QUE EXIGE TOKEN PARA ACESSAR ROTAS
 
 //ROTAS PROFISSIONAIS:
 // router.post("/doctors/", doctorRegister);
