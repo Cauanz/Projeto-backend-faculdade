@@ -11,4 +11,8 @@ function formatPhone(phone) {
   return phone.replace(/\D/g, '');
 }
 
-module.exports = { removeAccents, formatCPF, formatPhone };
+function formatCRM(crm){
+  return crm.replace(/[^a-zA-Z0-9/]/g, '').toUpperCase();
+}
+
+module.exports = { removeAccents, formatCPF, formatPhone, formatCRM };
