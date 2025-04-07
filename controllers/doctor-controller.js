@@ -9,6 +9,10 @@ const doctorRegister = async (req, res) => {
 
   try {
 
+    if (!name || !email || !speciality || !crm || !phoneNumber || !password) {
+      return res.status(400).json({ error: "Email, nome, especialização, CRM, número de telefone e senha são obrigatórios." });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
@@ -40,6 +44,10 @@ const doctorLogin = async (req, res) => {
 
   try {
     
+    if (!CRM || !password) {
+      return res.status(400).json({ error: "CRM e senha são obrigatórios." });
+    }
+
     const existingUser = await Doctor.findOne({ where: { crm: formatCRM(crm) }});
 
     if(!existingUser) {

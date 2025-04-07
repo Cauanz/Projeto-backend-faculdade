@@ -5,34 +5,38 @@ const router = require("express").Router();
 
 
 //ROTAS PACIENTES:
-router.post("/patients/", patientRegister);
-router.post("/patients/login/", patientLogin);
+router.post("/patients/", patientRegister); //Cria um novo paciente
+router.post("/patients/login/", patientLogin); //Realiza login do paciente com token JWT
 // router.post("/patients/logout/", patientLogout);
-router.get("/patients/", getPatients);
-router.get("/patients/:id", getPatient);
-router.put("/patients/:id", updatePatient);
-router.delete("/patients/:id", deletePatient);
-
-//TODO - TECNICAMENTE É SÓ TERMINAR AS ROTAS DE PACIENTE E DUPLICAR ELAS ALTERANDO OQUE FOR NECESSÁRIO NAS OUTRAS (DISSERAM QUE EU SÓ PRECISO FAZER O CRUD, NÉ?)
-//TODO - CRIAR O MIDDLEWARE QUE EXIGE TOKEN PARA ACESSAR ROTAS
+router.get("/patients/", getPatients); //Retorna todos os pacientes.
+router.get("/patients/:id", getPatient); //Retorna paciente especifico pelo ID.
+router.put("/patients/:id", updatePatient); //Atualiza paciente especifico pelo ID.
+router.delete("/patients/:id", deletePatient); //Remove paciente especifico pelo ID.
 
 //ROTAS PROFISSIONAIS:
-router.post("/doctors/", doctorRegister);
-router.post("/doctors/login", doctorLogin);
+router.post("/doctors/", doctorRegister);  //Cria um novo profissional.
+router.post("/doctors/login", doctorLogin); //Realiza login do profissional com token JWT.
 // router.post("/doctors/logout", doctorsLogout);
-router.get("/doctors/", getDoctors);
-router.get("/doctors/:id", getDoctor);
-router.put("/doctors/:id", updateDoctor);
-router.delete("/doctors/:id", deleteDoctor);
-
+router.get("/doctors/", getDoctors); //Retorna todos os pacientes.
+router.get("/doctors/:id", getDoctor); //Retorna paciente especifico pelo ID.
+router.put("/doctors/:id", updateDoctor); //Atualiza paciente especifico pelo ID.
+router.delete("/doctors/:id", deleteDoctor); //Remove paciente especifico pelo ID.
 
 //ROTAS ADMINISTRADORES:
-router.post("/admin/", adminRegister);
-router.post("/admin/login", adminLogin);
+router.post("/admin/", adminRegister); //Cria um novo administrador.
+router.post("/admin/login", adminLogin); //Realiza login do administrador com token JWT.
 // router.post("/admin/logout", adminLogout);
-router.get("/admin/", getAdmins);
-router.get("/admin/:id", getAdmin);
-router.put("/admin/:id", updateAdmin);
-router.delete("/admin/:id", deleteAdmin);
+router.get("/admin/", getAdmins); //Retorna todos os administradores.
+router.get("/admin/:id", getAdmin); //Retorna administrador especifico pelo ID.
+router.put("/admin/:id", updateAdmin); //Atualiza administrador especifico pelo ID.
+router.delete("/admin/:id", deleteAdmin); //Remove administrador especifico pelo ID.
+
+//ROTAS CONSULTAS:
+router.post("/appointments/", appointmentRegister); //Cria uma nova consulta.
+router.get("/appointments/", getAppointments); //Retorna todas as consultas cadastradas.
+router.get("/appointments/:id", getAppointment); //Retorna uma consulta específica pelo ID.
+router.put("/appointments/:id", updateAppointment); //Atualiza uma consulta específica pelo ID.
+router.delete("/appointments/:id", deleteAppointment); //Remove uma consulta específica pelo ID.
+router.delete("/appointments/:pacientId", getPacientAppointments); //Retorna todas as consultas de um paciente específico pelo ID.
 
 module.exports = router;

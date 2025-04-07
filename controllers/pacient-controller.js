@@ -9,6 +9,10 @@ const patientRegister = async (req, res) => {
 
   try {
 
+    if (!name || !email || !birthDate || !address || !CPF || !phoneNumber || password) {
+      return res.status(400).json({ error: "Email, nome, data de nascimento, endereço, CPF, número de telefone e senha são obrigatórios." });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
@@ -41,6 +45,10 @@ const patientLogin = async (req, res) => {
   const { CPF, password } = req.body;
 
   try {
+
+    if (!CPF || !password) {
+      return res.status(400).json({ error: "CPF e senha são obrigatórios." });
+    }
     
     const existingUser = await Patient.findOne({ where: { cpf: formatCPF(CPF) }});
 

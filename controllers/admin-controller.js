@@ -11,6 +11,10 @@ const adminRegister = async (req, res) => {
 
   try {
 
+    if (!name || !email || !sector || !phoneNumber || !password) {
+      return res.status(400).json({ error: "Email, nome, setor de atuação, número de telefone e senha são obrigatórios." });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
@@ -40,6 +44,10 @@ const adminLogin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email e senha são obrigatórios." });
+    }
     
     const existingUser = await Admin.findOne({ where: { email }});
 
