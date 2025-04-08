@@ -44,7 +44,7 @@ const doctorLogin = async (req, res) => {
 
   try {
     
-    if (!CRM || !password) {
+    if (!crm || !password) {
       return res.status(400).json({ error: "CRM e senha são obrigatórios." });
     }
 

@@ -1,7 +1,8 @@
+const router = require("express").Router();
 const { adminRegister, adminLogin, getAdmins, getAdmin, updateAdmin, deleteAdmin } = require("../controllers/admin-controller");
+const { appointmentRegister, getAppointments, getAppointment, updateAppointment, deleteAppointment, getPacientAppointment, getPacientAppointments } = require("../controllers/appointment-controller");
 const { doctorRegister, doctorLogin, getDoctors, getDoctor, updateDoctor, deleteDoctor } = require("../controllers/doctor-controller");
 const { patientRegister, patientLogin, getPatients, getPatient, updatePatient, deletePatient } = require("../controllers/pacient-controller");
-const router = require("express").Router();
 
 
 //ROTAS PACIENTES:
@@ -34,9 +35,9 @@ router.delete("/admin/:id", deleteAdmin); //Remove administrador especifico pelo
 //ROTAS CONSULTAS:
 router.post("/appointments/", appointmentRegister); //Cria uma nova consulta.
 router.get("/appointments/", getAppointments); //Retorna todas as consultas cadastradas.
+router.delete("/appointments/:pacientId", getPacientAppointments); //Retorna todas as consultas de um paciente específico pelo ID.
 router.get("/appointments/:id", getAppointment); //Retorna uma consulta específica pelo ID.
 router.put("/appointments/:id", updateAppointment); //Atualiza uma consulta específica pelo ID.
 router.delete("/appointments/:id", deleteAppointment); //Remove uma consulta específica pelo ID.
-router.delete("/appointments/:pacientId", getPacientAppointments); //Retorna todas as consultas de um paciente específico pelo ID.
 
 module.exports = router;
