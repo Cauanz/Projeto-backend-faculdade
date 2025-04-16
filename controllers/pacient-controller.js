@@ -2,24 +2,31 @@ const bcrypt = require("bcrypt");
 const Patient = require("../models/patientModel");
 const { removeAccents, formatCPF, formatPhone } = require("../functions");
 const jwt = require("jsonwebtoken");
+const { Op } = require("sequelize");
 
-const patientRegister = async (req, res) => {
+const patientRegister = async (req, res) => { 
 
   const { name, email, birthDate, address, CPF, phoneNumber, password } = req.body;
 
   try {
 
-    if (!name || !email || !birthDate || !address || !CPF || !phoneNumber || password) {
+    if (!name || !email || !birthDate || !address || !CPF || !phoneNumber || !password) {
       return res.status(400).json({ error: "Email, nome, data de nascimento, endereço, CPF, número de telefone e senha são obrigatórios." });
     }
 
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const existingUser = await Patient.findOne({ where: { email } });
+    const existingUser = await Patient.findOne({ where: {
+        [Op.or]: [
+          { email: email },
+          { cpf: formatCPF(CPF) }
+        ] 
+      } 
+    });
 
     if (existingUser) {
-      res.status(400).json({ message: "Email já cadastrado" });
+      res.status(400).json({ message: "Email ou CPF já cadastrado" });
       return;
     }
 
@@ -87,13 +94,17 @@ const getPatients = async (req, res) => {
 
 }
 
-const getPatient = async (req, res) => {
+const getPatientById = async (req, res) => {
 
   const id = req.params.id;
 
   try {
 
     const patient = await Patient.findOne({ where: { id } });
+
+    if (!patient) {
+      return res.status(404).json({ message: 'Paciente não encontrado' });
+    }
 
     res.json({ patient });
 
@@ -109,12 +120,30 @@ const updatePatient = async (req, res) => {
   const { name, email, birthDate, address, CPF, phoneNumber, medical_history } = req.body;
 
   try {
+
+    if (!name && !email && !birthDate && !address && !CPF && !phoneNumber && !medical_history) {
+      return res.status(400).json({ error: "Pelo menos um campo deve ser enviado para atualização." });
+    }
     
     const existingUser = await Patient.findOne({ where: { id }});
 
     if(!existingUser) {
       res.status(401).json({ message: "Paciente não encontrado"});
       return;
+    }
+
+    if (email) {
+      const emailExists = await Patient.findOne({ where: { email, id: { [Op.ne]: id } } });
+      if (emailExists) {
+        return res.status(400).json({ error: "Email já está em uso por outro paciente." });
+      }
+    }
+    
+    if (CPF) {
+      const cpfExists = await Patient.findOne({ where: { cpf: formatCPF(CPF), id: { [Op.ne]: id } } });
+      if (cpfExists) {
+        return res.status(400).json({ error: "CPF já está em uso por outro paciente." });
+      }
     }
 
     const fieldsToUpdate = {};
@@ -130,11 +159,9 @@ const updatePatient = async (req, res) => {
     const updatedPatient = await Patient.update(fieldsToUpdate, { where: { id } });
 
     res.status(200).json({ message: "Paciente atualizado com sucesso" });
-
   } catch (error) {
     res.status(500).json({ message: "Erro ao atualizar o paciente", error });
   }
-
 }
 
 const deletePatient = async (req, res) => {
@@ -159,5 +186,4 @@ const deletePatient = async (req, res) => {
   }
 
 }
-
-module.exports = { patientRegister, patientLogin, getPatients, getPatient, updatePatient, deletePatient };
+module.exports = { patientRegister, patientLogin, getPatients, getPatientById, updatePatient, deletePatient };

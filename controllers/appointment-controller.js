@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt");
 const { removeAccents, formatPhone, formatCRM } = require("../functions");
-const jwt = require("jsonwebtoken");
 const Appointment = require("../models/appointmentModel");
 
 const appointmentRegister = async (req, res) => {
@@ -16,7 +15,7 @@ const appointmentRegister = async (req, res) => {
     const existingAppointment = await Appointment.findOne({ where: { doctor_id: doctorId, appointment_date: appointmentDate } });
 
     if (existingAppointment) {
-      res.status(400).json({ message: "Email já cadastrado" }) 
+      res.status(400).json({ message: "Consulta já criada" });
       return;
     } 
 
@@ -65,13 +64,17 @@ const getAppointment = async (req, res) => {
 
 const getPacientAppointments = async (req, res) => {
 
-  const pacientId = req.params.id;
+  const { patientId } = req.params;
 
   try {
 
-    const pacientAppointments = await Appointment.findOne({ where: { pacient_id: pacientId } });
+    const patientAppointments = await Appointment.findOne({ where: { patient_id: patientId } });
 
-    res.json({ pacientAppointments });
+    if (!patientAppointments || patientAppointments.length === 0) {
+      return res.status(404).json({ message: "Nenhuma consulta encontrada para o paciente especificado." });
+    }
+
+    res.json({ patientAppointments });
 
   } catch (error) {
     return res.status(500).json({ message: 'Não foi possivel recuperar a consulta do paciente especificado', error });
@@ -82,9 +85,13 @@ const getPacientAppointments = async (req, res) => {
 const updateAppointment = async (req, res) => {
 
   const { id } = req.params;
-  const { pacientId, doctorId, appointmentDate, status } = req.body;
+  const { patientId, doctorId, appointmentDate, status } = req.body;
 
   try {
+
+    if (!patientId && !doctorId && !appointmentDate && !status) {
+      return res.status(400).json({ error: "Pelo menos um campo deve ser enviado para atualização." });
+    }
     
     const existingAppointment = await Appointment.findOne({ where: { id }});
 
@@ -95,7 +102,7 @@ const updateAppointment = async (req, res) => {
     
     const fieldsToUpdate = {};
 
-    if (pacientId) fieldsToUpdate.pacient_id = pacientId;
+    if (patientId) fieldsToUpdate.patient_id = patientId;
     if (doctorId) fieldsToUpdate.doctor_id = doctorId;
     if (appointmentDate) fieldsToUpdate.appointment_date = appointmentDate;
     if (status) fieldsToUpdate.status = status;
@@ -107,7 +114,7 @@ const updateAppointment = async (req, res) => {
     res.status(500).json({ message: "Erro ao atualizar consulta", error });
   }
 
-}
+}       
 
 const deleteAppointment = async (req, res) => {
 
